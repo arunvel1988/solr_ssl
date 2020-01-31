@@ -1,4 +1,4 @@
-SOLR_OPTS="$SOLR_OPTS -Dsun.net.inetaddr.ttl=60 -Dsun.net.inetaddr.negative.ttl=60"
+
 
 SOLR_SSL_ENABLED=true
 SOLR_SSL_KEY_STORE=/ssl/solr-ssl.keystore.jks
@@ -8,6 +8,10 @@ SOLR_SSL_TRUST_STORE_PASSWORD=secret
 SOLR_SSL_NEED_CLIENT_AUTH=false
 SOLR_SSL_WANT_CLIENT_AUTH=false
 SOLR_SSL_CHECK_PEER_NAME=true
+SOLR_PID_DIR="/var/solr"
+SOLR_HOME="/var/solr/data"
+LOG4J_PROPS="/var/solr/log4j2.xml"
+SOLR_LOGS_DIR="/var/solr/logs"
 SOLR_SSL_KEY_STORE_TYPE=JKS
 SOLR_SSL_TRUST_STORE_TYPE=JKS
 SOLR_PORT=8984
