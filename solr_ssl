@@ -1,0 +1,45 @@
+cat > solr.in.sh <<'EOM'
+
+SOLR_SSL_ENABLED=true
+SOLR_SSL_KEY_STORE=/ssl/solr-ssl.keystore.jks
+SOLR_SSL_KEY_STORE_PASSWORD=secret
+SOLR_SSL_TRUST_STORE=/ssl/solr-ssl.keystore.jks
+SOLR_SSL_TRUST_STORE_PASSWORD=secret
+SOLR_SSL_NEED_CLIENT_AUTH=false
+SOLR_SSL_WANT_CLIENT_AUTH=false
+SOLR_SSL_CHECK_PEER_NAME=true
+SOLR_SSL_KEY_STORE_TYPE=JKS
+SOLR_SSL_TRUST_STORE_TYPE=JKS
+SOLR_PORT=8983
+EOM
+
+
+
+docker run -it -v $PWD/ssl:/ssl -v $PWD/solr.in.sh:/etc/default/solr.in.sh -p 8984:8983 arunvel1988/arun_solr
+
+mkdir ssl
+sudo chown 8983:8983 ssl
+docker run -it -v $PWD/ssl:/ssl -w /ssl arunvel1988/arun_solr bash
+
+keytool -genkeypair -alias solr-ssl -keyalg RSA -keysize 2048 -keypass secret -storepass secret -validity 9999 -keystore solr-ssl.keystore.jks -ext SAN=DNS:localhost,IP:127.0.0.1 -dname "CN=localhost, OU=Organizational Unit, O=Organization, L=Location, ST=State, C=Country"
+
+keytool -importkeystore -srckeystore solr-ssl.keystore.jks -destkeystore solr-ssl.keystore.p12 -srcstoretype jks -deststoretype pkcs12
+
+openssl pkcs12 -in solr-ssl.keystore.p12 -out solr-ssl.pem
+
+
+
+docker run -it -v $PWD/ssl:/ssl \
+  -e SOLR_SSL_ENABLED=true \
+  -e SOLR_SSL_KEY_STORE=/ssl/solr-ssl.keystore.jks \
+  -e SOLR_SSL_KEY_STORE_PASSWORD=secret \
+  -e SOLR_SSL_TRUST_STORE=/ssl/solr-ssl.keystore.jks \
+  -e SOLR_SSL_TRUST_STORE_PASSWORD=secret \
+  -e SOLR_SSL_NEED_CLIENT_AUTH=false \
+  -e SOLR_SSL_WANT_CLIENT_AUTH=false \
+  -e SOLR_SSL_CHECK_PEER_NAME=true \
+  -e SOLR_SSL_KEY_STORE_TYPE=JKS \
+  -e SOLR_SSL_TRUST_STORE_TYPE=JKS \
+  -e SOLR_PORT=8984 \
+  -p 8984:8984 \
+  solr:8.0.0
