@@ -1,2 +1,5 @@
 [url "https://"]   
     insteadOf = git://
+[user]
+	email = you@example.com
+	name = Your Name
